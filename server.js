@@ -124,6 +124,24 @@ app.post('/login', async (req, res) => {
   res.status(200).json({ success: true, message: 'Login successful' });
 });
 
+
+app.post('/login/driver', async (req, res) => {
+  const { email, password } = req.body;
+  const database = client.db("evgo");
+  const drivers = database.collection("drivers"); // Assuming you have a 'drivers' collection
+
+  // Find driver by email
+  const driver = await drivers.findOne({ email });
+
+  // If driver is not found or password is incorrect
+  if (!driver || !await bcrypt.compare(password, driver.password)) {
+    return res.status(401).json({ success: false, message: 'Invalid email or password' });
+  }
+
+  // If login is successful
+  res.status(200).json({ success: true, message: 'Driver login successful' });
+});
+
 app.post('/request-ev', async (req, res) => {
   const { userId, pickupLocation } = req.body;
   const database = client.db("evgo");
